@@ -13,7 +13,8 @@ export function listProjects(): ProjectState[] {
   try {
     const raw = localStorage.getItem(PROJECTS_KEY);
     if (!raw) return [];
-    return JSON.parse(raw) as ProjectState[];
+    const parsed: unknown = JSON.parse(raw);
+    return Array.isArray(parsed) ? (parsed as ProjectState[]) : [];
   } catch {
     return [];
   }
@@ -45,7 +46,11 @@ function saveAll(projects: ProjectState[]): StorageWriteResult {
 
 export function getActiveProjectId(): string | null {
   if (!canUseStorage()) return null;
-  return localStorage.getItem(ACTIVE_KEY);
+  try {
+    return localStorage.getItem(ACTIVE_KEY);
+  } catch {
+    return null;
+  }
 }
 
 export function setActiveProjectId(id: string | null): StorageWriteResult {

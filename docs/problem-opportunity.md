@@ -2,13 +2,13 @@
 
 **Umbrella:** Mirevox (`https://github.com/Mirevox`) — a faceless open-source charity umbrella of modular agent control-plane components.  
 **Module:** `stage-gate` — harness-agnostic visual stage-gate workflow and Gatekeeper UI.  
-**Status:** Draft (Requirements Gatherer output; ready for council vetting).
+**Status:** Council narrative (reconciled to locked v1). Canonical short form: [`problem-statement.md`](problem-statement.md).
 
 ---
 
 ## 1. Context: Where Stage-gate Sits
 
-Modern AI coding and work tools run inside a **harness** — the workspace around a model that manages tools, files, sandboxes, retries, and execution (for example, VS Code with a side agent, a terminal coding agent, or a web chat workspace). Harnesses are good at executing tasks once instructions are clear, and poor at guiding a human through *what should happen before execution* and *when it is safe to move to the next phase*.
+Modern AI coding and work tools run inside a **harness** — the workspace around a model that manages tools, files, sandboxes, retries, and execution (for example, VS Code with a side agent, a terminal coding agent, or a web chat workspace). Harnesses are good at executing tasks once instructions are clear, and poor at guiding a human through *what should happen before execution* and *what is still missing before the next step*.
 
 Mirevox builds modular control-plane components that sit *above* models and harnesses rather than competing with foundation models or building yet another terminal harness. **Stage-gate** is the human-facing workflow layer in that control plane: an open-source, runnable web UI that guides people through structured delivery stages and substages on top of whichever harness they already use.
 
@@ -61,7 +61,7 @@ Stage-gate addresses these gaps by bringing a familiar consumer interaction patt
 
 | Persona | Profile | Primary Need from Stage-gate |
 | --- | --- | --- |
-| **Non-technical Domain Lead / Product Owner** *(primary)* | Understands business rules and user needs; uses VS Code + a side agent or chat harness to build or shape a tool, but does not live in Git or terminal workflows. | A calm, plain-English visual guide showing what stage they are in, what to prepare next, and when it is safe to hand work to the agent. |
+| **Non-technical Domain Lead / Product Owner** *(primary)* | Understands business rules and user needs; uses VS Code + a side agent or chat harness to build or shape a tool, but does not live in Git or terminal workflows. | A calm, plain-English visual guide showing what stage they are in, what checks are open, and what they still need to capture before advancing. |
 | **Solo Builder / Technical Generalist** | Comfortable with coding harnesses, but wants repeatable discipline across projects of varying risk. | Fast template selection (strict `HLR → FR/NFR → ADR → Spec` for core work; lean prototype flow for spikes) and explicit gate checks to avoid skipping critical thinking. |
 | **Small Team / Reviewer** | Collaborators reviewing whether an agent-assisted change is ready to move from design to build or release. | Inspectable stage history, captured artifacts, pass/fail gate status, and a clear log of any waived checks. |
 | **Open-Source / Mirevox Integrator** | Adopts or extends Mirevox modules for an internal workflow or local control plane. | Clean schemas, template definitions as plain files/JSON, and predictable API boundaries for composing with `shadow-versioning`, `context-engine`, or custom harnesses. |

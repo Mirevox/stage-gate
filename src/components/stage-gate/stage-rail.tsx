@@ -41,8 +41,9 @@ export function StageRail({
                 "relative rounded-xl border p-3 transition-colors",
                 isViewed
                   ? "border-[var(--neon)]/40 bg-[var(--neon)]/5"
-                  : "border-[var(--line)] bg-[var(--panel)]/40",
-                !unlocked && "opacity-55",
+                  : unlocked
+                    ? "border-[var(--line)] bg-[var(--panel)]/40"
+                    : "border-[var(--line)] bg-[var(--panel)]/25",
               )}
             >
               <div className="mb-2 flex items-start justify-between gap-2">
@@ -91,15 +92,17 @@ export function StageRail({
                           "w-full rounded-md px-2.5 py-1.5 text-left text-sm transition-colors",
                           viewed
                             ? "bg-[var(--neon)]/15 text-[var(--neon)]"
-                            : "text-[var(--muted)] hover:bg-white/5 hover:text-[var(--text)]",
-                          frontier && !viewed && "ring-1 ring-inset ring-[var(--neon)]/25",
-                          !subUnlocked && "cursor-not-allowed opacity-50",
+                            : subUnlocked
+                              ? "text-[var(--muted)] hover:bg-white/5 hover:text-[var(--text)]"
+                              : "cursor-not-allowed text-[var(--muted)]",
+                          frontier && subUnlocked && !viewed &&
+                            "ring-1 ring-inset ring-[var(--neon)]/25",
                         )}
                       >
                         {sub.name}
-                        {frontier && !viewed ? (
-                          <span className="ml-2 text-[10px] uppercase tracking-wide text-[var(--neon)]/70">
-                            frontier
+                        {frontier && subUnlocked && !viewed ? (
+                          <span className="ml-2 text-[10px] uppercase tracking-wide text-[var(--neon)]">
+                            current
                           </span>
                         ) : null}
                       </button>

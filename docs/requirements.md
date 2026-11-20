@@ -5,11 +5,11 @@
 **Version:** v1.0 (Locked)  
 **Status:** Locked for v1 build, verification, and release  
 **Inputs Vetted:**
-- `/agent/repos/tmp-51ef90955a03092e/docs/problem-opportunity.md`
-- `/agent/repos/tmp-51ef90955a03092e/docs/requirements.draft.md`
-- `/agent/repos/tmp-51ef90955a03092e/docs/market-gap.md`
-- `/agent/repos/tmp-51ef90955a03092e/docs/devils-advocate.md`
-- Current v1 implementation in `/agent/repos/tmp-51ef90955a03092e/src/`
+- `docs/problem-opportunity.md`
+- `docs/requirements.draft.md` (superseded)
+- `docs/market-gap.md`
+- `docs/devils-advocate.md`
+- Current v1 implementation in `src/`
 
 ---
 

@@ -10,7 +10,7 @@ const KIND_LABEL: Record<GateCriterion["kind"], string> = {
   checklist: "Checklist",
   artifact: "Artifact",
   approval: "Approval",
-  harness_signal: "Harness signal",
+  harness_signal: "Harness check (self-reported)",
 };
 
 export function CriterionRow({
@@ -24,11 +24,14 @@ export function CriterionRow({
 }) {
   const status = state.status ?? "pending";
   const [waiverHint, setWaiverHint] = useState<string | null>(null);
+  const noteInputId = `note-${criterion.id}`;
 
   const tryWaive = () => {
     const note = (state.note ?? "").trim();
     if (!note) {
       setWaiverHint("Add a short reason in the note field before waiving.");
+      const el = document.getElementById(noteInputId) as HTMLInputElement | null;
+      el?.focus();
       return;
     }
     setWaiverHint(null);
@@ -54,7 +57,7 @@ export function CriterionRow({
               <Badge>Optional</Badge>
             )}
             <Badge>{KIND_LABEL[criterion.kind]}</Badge>
-            {status === "blocked" && <Badge tone="warn">Blocked</Badge>}
+            {status === "blocked" && <Badge tone="danger">Blocked</Badge>}
             {status === "waived" && <Badge tone="warn">Waived</Badge>}
             {status === "met" && <Badge tone="ok">Done</Badge>}
           </div>
@@ -114,21 +117,28 @@ export function CriterionRow({
         <label className="block text-xs text-[var(--muted)]">
           Evidence / link / path
           <input
-            className="mt-1 w-full rounded-md border border-[var(--line)] bg-black/30 px-3 py-2 text-sm text-[var(--text)] placeholder:text-white/25 focus:border-[var(--neon)]/50 focus:outline-none"
+            className="mt-1 w-full rounded-md border border-[var(--line)] bg-black/30 px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)]/75 focus:border-[var(--neon)]/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--neon)]"
             placeholder="e.g. docs/requirements.md or a URL"
             value={state.evidence ?? ""}
             onChange={(e) => onChange({ ...state, evidence: e.target.value })}
           />
         </label>
-        <label className="block text-xs text-[var(--muted)]">
+        <label className="block text-xs text-[var(--muted)]" htmlFor={noteInputId}>
           Note (required when waiving)
           <input
-            className="mt-1 w-full rounded-md border border-[var(--line)] bg-black/30 px-3 py-2 text-sm text-[var(--text)] placeholder:text-white/25 focus:border-[var(--neon)]/50 focus:outline-none"
+            id={noteInputId}
+            className="mt-1 w-full rounded-md border border-[var(--line)] bg-black/30 px-3 py-2 text-sm text-[var(--text)] placeholder:text-[var(--muted)]/75 focus:border-[var(--neon)]/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--neon)]"
             placeholder="Why this is done or waived"
             value={state.note ?? ""}
             onChange={(e) => {
+              const nextNote = e.target.value;
               setWaiverHint(null);
-              onChange({ ...state, note: e.target.value });
+              if (status === "waived" && !nextNote.trim()) {
+                setWaiverHint("Waiver cleared — add a reason again, or mark done.");
+                onChange({ ...state, note: nextNote, status: "pending" });
+                return;
+              }
+              onChange({ ...state, note: nextNote });
             }}
           />
         </label>

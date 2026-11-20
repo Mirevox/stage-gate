@@ -1,5 +1,7 @@
 # Mirevox Stage-gate — Draft Requirements (v1)
 
+> **SUPERSEDED** by [`docs/requirements.md`](requirements.md). Keep this file as council history only — do not treat draft REST/HTTP 409 / handoff-packet / template-import items as v1 scope.
+
 **Umbrella:** Mirevox (`https://github.com/Mirevox`)  
 **Module:** `stage-gate`  
 **Status:** Draft for council review (Requirements Vetter, Architect, FR/NFR Author, Market Researcher, Devil's Advocate). Final locked requirements will live in `docs/requirements.md`.

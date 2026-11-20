@@ -94,15 +94,17 @@ The practical shipping thesis for **v1** is more modest than the long-term gap: 
 ### OSS
 | Product | Role | Gap vs Stage-gate v1 |
 | --- | --- | --- |
-| [GitHub Spec Kit](https://github.com/github/spec-kit) | Spec-driven constitution + specify/plan/tasks/implement conventions | Spec-shaped path only; CLI/prompt workflow, not a harness-neutral visual Gatekeeper |
-| [OpenSpec](https://github.com/Fission-AI/OpenSpec) | Lightweight change proposals/specs/tasks | Same class as Spec Kit — valuable artifacts, not a multi-template advance UI |
-| [BPMN.js](https://github.com/bpmn-io/bpmn-js) / generic workflow UIs | Diagram/edit process models | General process modeling; no AI-harness readiness vocabulary or Gatekeeper copy |
-| GitHub Issue Templates + Projects | Lightweight checklists and boards | Flexible but no ordered unlock derived from gate criteria, no waiver audit in-product |
+| [GitHub Spec Kit](https://github.com/github/spec-kit) | Spec/plan/tasks/implement (also documents bug-fix & idea paths) | Agent/CLI/repo-centered; not a persistent visual Gatekeeper for non-technical users |
+| [OpenSpec](https://github.com/Fission-AI/OpenSpec) | Proposals, delta specs, tasks across many assistants | Fluid “enablers not gates”; chat/repo workflow, not nested stage unlock UI |
+| [BMad Method](https://github.com/bmad-code-org/BMAD-METHOD) | Adaptive AI method (clarify → plan → implement; skip planning for small fixes) | Strongest challenge to “selectable rigor”; still developer/command-oriented |
+| [Plane CE](https://plane.so/open-source) | Self-hosted visual PM (states, cycles, docs) | Broader multi-user PM; OSS lacks approval gates (paid add-on) |
 
 ### Paid / commercial
 | Product | Role | Gap vs Stage-gate v1 |
 | --- | --- | --- |
-| Linear / Jira (+ workflow apps) | Issue lifecycle, approvals, automations | Strong delivery SoR; weak semantic link to agent readiness without custom glue |
-| Cursor / Copilot coding agent / Codex UIs | Native agent plans, diffs, runs | Closest to work; vendor-tied, conversation/run-centric, not portable governance |
-| Sopheon / Planview / Planisware-class | Enterprise phase-gate & portfolio | Heavy governance far from AI coding loop |
-| Process Street / Pipefy / Notion workflows | Repeatable checklists & approvals | Approachable; weak binding to coding evidence and agent sessions |
+| [Jira](https://www.atlassian.com/software/jira) | Configurable workflows, validators, approvals | Can reproduce most v1 behavior with admin cost; issue-centric, not agent-sidecar |
+| [Linear](https://linear.app) | Issue/project lifecycle + delivery integrations | Light delivery SoR; not criterion-level readiness + waivers |
+| [Process Street](https://www.process.st/) | Visual workflows, stop tasks, approvals | Closest generic UX substitute; proprietary, not coding-template specific |
+| [Cursor](https://cursor.com) Plan / Cloud Agent | Native plans, runs, PR artifacts | Real execution evidence; one-harness lock-in, no portable stage templates |
+
+**Note:** Generic checklists also lack live coding evidence — and **so does Stage-gate v1**. Differentiation today is local OSS packaging + software-oriented templates + ordered unlock + reason-required waivers, not observed evidence.

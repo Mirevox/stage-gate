@@ -202,14 +202,14 @@ export function AppShell() {
           {stage && substage ? (
             <>
               <div className="space-y-2">
-                <p className="text-xs uppercase tracking-wider text-white/40">
+                <p className="text-xs uppercase tracking-wider text-[var(--muted)]">
                   {stage.name}
                 </p>
                 <h2 className="font-display text-3xl text-[var(--text)]">
                   {substage.name}
                 </h2>
                 <p className="text-[var(--muted)]">{substage.summary}</p>
-                <p className="text-xs text-white/35">{template.harnessNote}</p>
+                <p className="text-xs text-[var(--muted)]">{template.harnessNote}</p>
               </div>
               <div className="space-y-3">
                 {substage.criteria.map((c) => (
@@ -239,11 +239,28 @@ export function AppShell() {
         {verdict && (
           <GatekeeperPanel
             verdict={verdict}
+            atFrontier={
+              stageId === project.currentStageId &&
+              substageId === project.currentSubstageId
+            }
             hasNextStep={
-              nextSubstage(template, stageId, substageId) !== null
+              nextSubstage(
+                template,
+                project.currentStageId,
+                project.currentSubstageId,
+              ) !== null
             }
             onAdvance={() => {
-              const next = nextSubstage(template, stageId, substageId);
+              // Advance only from the project frontier (never from a backtracked view).
+              const fromStage = project.currentStageId;
+              const fromSub = project.currentSubstageId;
+              if (stageId !== fromStage || substageId !== fromSub) return;
+              const frontier = askGatekeeper(template, project, {
+                stageId: fromStage,
+                substageId: fromSub,
+              });
+              if (!frontier.canAdvance) return;
+              const next = nextSubstage(template, fromStage, fromSub);
               if (!next) return;
               const result = advanceProject(project.id, {
                 stageId: next.stageId,

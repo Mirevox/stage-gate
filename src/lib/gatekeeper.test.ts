@@ -88,6 +88,18 @@ function meetSubstage(
   assert(verdict.met.length === 0, "waived checks must not appear in met[]");
 }
 
+// Reasonless waived status does not pass
+{
+  const proto = getTemplate("prototype")!;
+  const project = baseProject("prototype");
+  for (const c of proto.stages[0].substages[0].criteria) {
+    project.criteria[c.id] = { status: "waived", note: "   " };
+  }
+  const verdict = askGatekeeper(proto, project);
+  assert(!verdict.canAdvance, "blank waiver note must not advance");
+  assert(verdict.waived.length === 0, "reasonless waived not in waived[]");
+}
+
 // Blocked status surfaces distinct Gatekeeper phrasing
 {
   const content = getTemplate("content-ops")!;
