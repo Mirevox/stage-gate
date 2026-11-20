@@ -4,7 +4,8 @@
 **Module:** `stage-gate`  
 **Version:** v1.0  
 **Stack:** Next.js 16 (App Router) · React 19 · TypeScript 5 · Tailwind CSS 3 · Radix UI · Browser `localStorage`  
-**Companion Spec:** `/agent/repos/tmp-51ef90955a03092e/docs/requirements.md`
+**Companion Spec:** `docs/requirements.md`  
+**License:** Apache-2.0
 
 ---
 
@@ -191,14 +192,12 @@ v1 intentionally avoids building speculative plugin frameworks or runtime depend
 - **Network binding:** Defaults to `127.0.0.1:3847` (loopback-only by default for safe local/VM development).
 - **External dependencies:** None. No database, no Redis, no n8n, no reverse proxy, and no homelab stack.
 
-### Docker-Friendly Later (Non-Blocking Packaging Path)
-Containerization is explicitly **not** a v1 blocker, but the repository layout is already compatible with clean Docker packaging when needed:
-
-1. **Standalone Next.js output:** Add `output: "standalone"` to `next.config.ts`. Next.js will emit a minimal `.next/standalone` Node server bundle, enabling a small two-stage `Dockerfile` (`node:20-alpine` builder → slim non-root runtime image without `devDependencies`).
-2. **Environment-driven host/port binding:** While v1 `package.json` scripts bind `127.0.0.1:3847` for safe local execution, a Docker `CMD` simply runs `node server.js` with `HOSTNAME=0.0.0.0` and `PORT=3847` environment variables — no code changes required.
-3. **Stateless v1 container, single-volume v2 upgrade:** Because v1 stores state in browser `localStorage`, a containerized v1 deployment requires **no persistent volumes**. When v2 adds a server-side persistence adapter, mount one configurable directory (`STAGE_GATE_DATA_DIR=/data`) owned by a non-root user.
-4. **Zero native binary friction:** v1 uses pure JavaScript/TypeScript dependencies (no native SQLite/C++ addons), keeping cross-architecture builds (`linux/amd64`, `linux/arm64`) fast and deterministic.
-5. **Healthcheck readiness:** Adding a lightweight `/api/health` route handler returning `200 OK` will give container runtimes a clean liveness probe without pulling in orchestration complexity.
+### Docker Compose standup (shipped)
+1. **Standalone Next.js output:** `next.config.ts` sets `output: "standalone"`.
+2. **Multi-stage `Dockerfile`:** `node:22-alpine` build → non-root `nextjs` runtime; `HOSTNAME=0.0.0.0`, `PORT=3847`; image HEALTHCHECK hits `GET /api/health`.
+3. **`docker-compose.yml`:** Single `stage-gate` service, host port via `STAGE_GATE_PORT` (default 3847), no secrets, no volumes (browser `localStorage` remains the store).
+4. **`.env.example`:** Documents `STAGE_GATE_PORT` / `PORT` / `HOSTNAME` only — no API keys.
+5. **Gap:** Container is intentionally **stateless**; multi-browser/server persistence is a v2 adapter behind `storage.ts`.
 
 ---
 

@@ -46,7 +46,7 @@ Stage-gate addresses these gaps by bringing a familiar consumer interaction patt
   Every stage and substage can define concrete readiness checks that answer "can I advance yet, and if not, why?" Checks explain missing evidence in plain English, point directly to the incomplete substep, and allow deliberate overrides with a recorded reason so teams keep momentum without losing accountability.
 
 - **Harness-agnostic and open source.**  
-  Stage-gate does not trap users inside a proprietary IDE, model provider, or agent runtime. At any substage, users can generate a clean handoff packet (context, approved prior artifacts, current goal, and active gate criteria) to paste or feed into VS Code with a side agent, a CLI harness, or another tool.
+  Stage-gate does not trap users inside a proprietary IDE, model provider, or agent runtime. In **v1**, the harness is a labeled context the user records; live adapters and downloadable handoff packets are deferred (v1.1+). Users still work beside VS Code, Cursor, or another tool and mark Gatekeeper checks in this UI.
 
 - **Composable inside the Mirevox control plane.**  
   Stage-gate is useful completely standalone on a single machine, while exposing clean identifiers and boundaries (such as an optional project ID like `appcode-xyz-0`) so it pairs naturally with sibling Mirevox modules over time:
@@ -75,10 +75,10 @@ To prove the concept quickly without overbuilding infrastructure, **v1** targets
 1. **Runnable web UI** displaying visual stages and nested substages using the appointment-booking stepper model, usable side-by-side with VS Code or in a full browser window.
 2. **Selectable workflow templates** shipped out of the box — explicitly *not* spec-only (for example: Structured SDLC `HLR → FR/NFR → ADR → Spec`, a SpecKit/OpenSpec-compatible track, and a Rapid Build / Prototype track) plus support for customizing or adding templates.
 3. **Working Gatekeeper checks** evaluating "when can I advance?" at each stage/substage, displaying clear pass / needs-attention / blocking feedback, direct pointers to missing items, and audited human overrides where allowed.
-4. **Plain-language UX and harness handoff** allowing a non-technical user to capture stage artifacts in the UI and copy or export a structured handoff packet for VS Code + side agent (or any other harness).
-5. **Local persistence and portability** on a single Cloud VM, with clean data schemas ready for later Docker packaging and Mirevox module integration.
+4. **Plain-language UX** allowing a non-technical user to capture stage criteria, evidence strings, and notes in the UI (exportable handoff packets deferred to v1.1).
+5. **Local browser persistence** (`localStorage`) with Docker Compose packaging for one-command standup; clean schemas ready for later server persistence and Mirevox module integration.
 
-**v1 Success Signal:** A non-technical user can start a new workflow run, pick a template suited to their task, progress through pre-requirements into requirements and a build or spec track, understand exactly why a gate holds or passes, export a usable handoff for their agent harness, and resume after a restart — without touching Git commands, source code, or terminal-only tooling.
+**v1 Success Signal:** A non-technical user can start a new workflow run, pick a template suited to their task, progress through stages, understand exactly why a gate holds or passes (stated/waived checks only), and resume after a browser reload — without touching Git commands or terminal-only tooling.
 
 ---
 

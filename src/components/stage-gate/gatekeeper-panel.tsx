@@ -7,11 +7,15 @@ import { CheckCircle2, CircleAlert, ShieldQuestion } from "lucide-react";
 
 export function GatekeeperPanel({
   verdict,
+  hasNextStep,
   onAdvance,
 }: {
   verdict: AdvanceVerdict;
+  hasNextStep: boolean;
   onAdvance: () => void;
 }) {
+  const canClickAdvance = verdict.canAdvance && hasNextStep;
+
   return (
     <aside className="gatekeeper-panel relative overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--panel)] p-5">
       <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[var(--neon)]/10 blur-2xl" />
@@ -24,6 +28,10 @@ export function GatekeeperPanel({
         </div>
         <p className="text-lg font-medium leading-snug text-[var(--text)]">
           When can I advance?
+        </p>
+        <p className="text-xs leading-relaxed text-white/40">
+          Checks are what you mark done or waive here — Stage-gate does not watch
+          your harness, repo, or CI.
         </p>
         <p className="text-sm leading-relaxed text-[var(--muted)]">{verdict.summary}</p>
 
@@ -64,10 +72,14 @@ export function GatekeeperPanel({
 
         <Button
           className="w-full"
-          disabled={!verdict.canAdvance}
+          disabled={!canClickAdvance}
           onClick={onAdvance}
         >
-          {verdict.canAdvance ? "Advance to next step" : "Complete checks to advance"}
+          {!verdict.canAdvance
+            ? "Complete checks to advance"
+            : hasNextStep
+              ? "Advance to next step"
+              : "Workflow complete"}
         </Button>
       </div>
     </aside>

@@ -81,10 +81,23 @@ export function AppShell() {
       <main className="min-h-screen px-4 py-12 sm:px-8">
         <NewProjectForm
           onCreate={(input) => {
-            const created = createProject(input);
+            const { project: created, write } = createProject(input);
+            if (!write.ok) {
+              setStorageError(write.reason);
+              return;
+            }
+            setStorageError(null);
             refresh(created.id);
           }}
         />
+        {storageError && (
+          <div
+            className="mx-auto mt-6 max-w-3xl rounded-lg border border-amber-400/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-100"
+            role="alert"
+          >
+            {storageError}
+          </div>
+        )}
         {projects.length > 0 && (
           <section className="mx-auto mt-12 max-w-3xl space-y-3 border-t border-[var(--line)] pt-8">
             <h2 className="text-sm font-semibold text-[var(--text)]">Resume a project</h2>
@@ -205,8 +218,14 @@ export function AppShell() {
                     criterion={c}
                     state={project.criteria[c.id] ?? { status: "pending" }}
                     onChange={(next) => {
-                      const updated = updateCriterion(project.id, c.id, next);
-                      if (updated) setProject({ ...updated });
+                      const result = updateCriterion(project.id, c.id, next);
+                      if (!result) return;
+                      if (!result.write.ok) {
+                        setStorageError(result.write.reason);
+                        return;
+                      }
+                      setStorageError(null);
+                      setProject({ ...result.project });
                     }}
                   />
                 ))}
@@ -220,18 +239,25 @@ export function AppShell() {
         {verdict && (
           <GatekeeperPanel
             verdict={verdict}
+            hasNextStep={
+              nextSubstage(template, stageId, substageId) !== null
+            }
             onAdvance={() => {
               const next = nextSubstage(template, stageId, substageId);
               if (!next) return;
-              const updated = advanceProject(project.id, {
+              const result = advanceProject(project.id, {
                 stageId: next.stageId,
                 substageId: next.substageId,
               });
-              if (updated) {
-                setProject({ ...updated });
-                setViewStageId(next.stageId);
-                setViewSubstageId(next.substageId);
+              if (!result) return;
+              if (!result.write.ok) {
+                setStorageError(result.write.reason);
+                return;
               }
+              setStorageError(null);
+              setProject({ ...result.project });
+              setViewStageId(next.stageId);
+              setViewSubstageId(next.substageId);
             }}
           />
         )}

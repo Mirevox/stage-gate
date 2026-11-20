@@ -1,5 +1,15 @@
 # Market gap: a visual stage-gate layer for AI coding work
 
+## v1 honesty (shipping claim)
+
+**v1 ships today:** a local Next.js UI with four declarative templates, a deterministic Gatekeeper over **user-stated** and **waived** criteria, labeled harness context, and browser `localStorage`. It answers “when can I advance?” for blanks on the current step — not “is the work safe to ship,” and not “what did the agent/CI observe.”
+
+**v1 does not yet:** live harness adapters, repo/CI/PR evidence ingestion, Linear/Jira sync, SpecKit/OpenSpec artifact parsers, or multi-browser server persistence. Those remain the aspirational gap below; do not read them as shipped features.
+
+**Market verdict for this slice:** Yes — a real, narrower gap remains. SpecKit/OpenSpec are CLI/convention workflows without a non-technical visual Gatekeeper; Linear/Jira are delivery systems of record far from the agent loop; enterprise stage-gate suites are heavy; harness UIs are conversation/run-centric and vendor-tied; checklists lack ordered unlock + waiver audit. v1’s honest wedge is **template choice + plain-language advance checks beside any harness**, not cross-harness observed evidence (v2).
+
+---
+
 AI coding products are getting better at doing work, but they still leave users to infer whether the work is ready to move forward. A task may have a plan, a running agent, a diff, passing tests, and unresolved review comments spread across several surfaces. Experienced engineers can reconstruct the state from those signals. A product manager, designer, founder, or operations lead often cannot. The useful question for that user is not “what did the agent say?” but “can this advance, and if not, what is missing?”
 
 Mirevox Stage-gate would occupy that decision layer. Its strongest version is not another agent or a prescribed development method. It is a visual, open-source workflow UI above different coding harnesses, with selectable workflow templates and explicit gates backed by evidence. That positioning matters because the adjacent categories each solve only part of the problem.
@@ -77,4 +87,22 @@ The “non-technical user” promise also needs care. Simplifying the display ca
 
 Finally, incumbent responses are plausible. Coding harnesses can add native gates; issue trackers can deepen agent integrations; SpecKit or OpenSpec ecosystems can grow visual UIs. Mirevox’s defensible contribution is therefore unlikely to be any single screen or template. It is the combination of an open evidence schema, useful cross-harness adapters, portable workflow definitions, and a clear decision experience. If the first release does not demonstrate at least two materially different harnesses and two materially different workflow templates, the neutrality claim will remain theoretical and the product will look like another opinionated checklist.
 
-The practical shipping thesis is modest: release an OSS reference implementation that proves a workflow can survive a change of harness, that gates can be evaluated from traceable evidence, and that a non-technical stakeholder can understand the remaining blockers without reading an agent transcript. If users value those three outcomes, Mirevox has a credible wedge into the modular agent control plane. If they do not, adding more workflow features will not create the missing differentiation.
+The practical shipping thesis for **v1** is more modest than the long-term gap: prove that selectable templates + a deterministic Gatekeeper over stated/waived checks let a non-technical stakeholder see remaining blockers without reading an agent transcript, while sitting beside (not inside) any harness. Surviving a harness change with **observed** evidence and adapters is the v2 bar. If users do not value even the v1 decision surface, more workflow features will not create the missing differentiation.
+
+## Top alternatives (snapshot)
+
+### OSS
+| Product | Role | Gap vs Stage-gate v1 |
+| --- | --- | --- |
+| [GitHub Spec Kit](https://github.com/github/spec-kit) | Spec-driven constitution + specify/plan/tasks/implement conventions | Spec-shaped path only; CLI/prompt workflow, not a harness-neutral visual Gatekeeper |
+| [OpenSpec](https://github.com/Fission-AI/OpenSpec) | Lightweight change proposals/specs/tasks | Same class as Spec Kit — valuable artifacts, not a multi-template advance UI |
+| [BPMN.js](https://github.com/bpmn-io/bpmn-js) / generic workflow UIs | Diagram/edit process models | General process modeling; no AI-harness readiness vocabulary or Gatekeeper copy |
+| GitHub Issue Templates + Projects | Lightweight checklists and boards | Flexible but no ordered unlock derived from gate criteria, no waiver audit in-product |
+
+### Paid / commercial
+| Product | Role | Gap vs Stage-gate v1 |
+| --- | --- | --- |
+| Linear / Jira (+ workflow apps) | Issue lifecycle, approvals, automations | Strong delivery SoR; weak semantic link to agent readiness without custom glue |
+| Cursor / Copilot coding agent / Codex UIs | Native agent plans, diffs, runs | Closest to work; vendor-tied, conversation/run-centric, not portable governance |
+| Sopheon / Planview / Planisware-class | Enterprise phase-gate & portfolio | Heavy governance far from AI coding loop |
+| Process Street / Pipefy / Notion workflows | Repeatable checklists & approvals | Approachable; weak binding to coding evidence and agent sessions |

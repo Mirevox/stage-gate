@@ -24,9 +24,10 @@ export function NewProjectForm({
           Stage-gate
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-[var(--muted)]">
-          A visual workflow on top of any AI harness. Pick a template, walk the
-          stages, and ask Gatekeeper when you can advance — without learning Git
-          verbs or living in an agent transcript.
+          Visual steps and checks beside any AI harness. Pick a template, walk
+          the stages, and ask Gatekeeper what is still missing — without learning
+          Git verbs or living in an agent transcript. Checks are yours to mark;
+          this app does not connect to the harness yet.
         </p>
       </header>
 

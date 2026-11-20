@@ -81,7 +81,7 @@ export function createProject(input: {
   name: string;
   templateId: string;
   harness: string;
-}): ProjectState {
+}): { project: ProjectState; write: StorageWriteResult } {
   const template = getTemplate(input.templateId);
   if (!template) throw new Error(`Unknown template: ${input.templateId}`);
   const { stageId, substageId } = firstStageSubstage(template);
@@ -97,16 +97,16 @@ export function createProject(input: {
     currentStageId: stageId,
     currentSubstageId: substageId,
   };
-  upsertProject(project);
-  setActiveProjectId(project.id);
-  return project;
+  const write = upsertProject(project);
+  if (write.ok) setActiveProjectId(project.id);
+  return { project, write };
 }
 
 export function updateCriterion(
   projectId: string,
   criterionId: string,
   patch: Partial<CriterionState>,
-): ProjectState | undefined {
+): { project: ProjectState; write: StorageWriteResult } | undefined {
   const project = getProject(projectId);
   if (!project) return undefined;
   const prev = project.criteria[criterionId] ?? { status: "pending" as const };
@@ -116,21 +116,21 @@ export function updateCriterion(
     updatedAt: new Date().toISOString(),
   };
   project.updatedAt = new Date().toISOString();
-  upsertProject(project);
-  return project;
+  const write = upsertProject(project);
+  return { project, write };
 }
 
 export function advanceProject(
   projectId: string,
   next: { stageId: string; substageId: string },
-): ProjectState | undefined {
+): { project: ProjectState; write: StorageWriteResult } | undefined {
   const project = getProject(projectId);
   if (!project) return undefined;
   project.currentStageId = next.stageId;
   project.currentSubstageId = next.substageId;
   project.updatedAt = new Date().toISOString();
-  upsertProject(project);
-  return project;
+  const write = upsertProject(project);
+  return { project, write };
 }
 
 export const HARNESS_PRESETS = [
