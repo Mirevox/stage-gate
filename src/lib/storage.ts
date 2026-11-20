@@ -19,9 +19,28 @@ export function listProjects(): ProjectState[] {
   }
 }
 
-function saveAll(projects: ProjectState[]) {
-  if (!canUseStorage()) return;
-  localStorage.setItem(PROJECTS_KEY, JSON.stringify(projects));
+export type StorageWriteResult = { ok: true } | { ok: false; reason: string };
+
+function writeKey(key: string, value: string): StorageWriteResult {
+  if (!canUseStorage()) return { ok: false, reason: "Storage unavailable." };
+  try {
+    localStorage.setItem(key, value);
+    return { ok: true };
+  } catch (err) {
+    const quota =
+      err instanceof DOMException &&
+      (err.name === "QuotaExceededError" || err.code === 22);
+    return {
+      ok: false,
+      reason: quota
+        ? "Browser storage is full. Remove an old project or clear site data, then try again."
+        : "Could not save to browser storage.",
+    };
+  }
+}
+
+function saveAll(projects: ProjectState[]): StorageWriteResult {
+  return writeKey(PROJECTS_KEY, JSON.stringify(projects));
 }
 
 export function getActiveProjectId(): string | null {
@@ -29,27 +48,33 @@ export function getActiveProjectId(): string | null {
   return localStorage.getItem(ACTIVE_KEY);
 }
 
-export function setActiveProjectId(id: string | null) {
-  if (!canUseStorage()) return;
-  if (id) localStorage.setItem(ACTIVE_KEY, id);
-  else localStorage.removeItem(ACTIVE_KEY);
+export function setActiveProjectId(id: string | null): StorageWriteResult {
+  if (!canUseStorage()) return { ok: false, reason: "Storage unavailable." };
+  if (id) return writeKey(ACTIVE_KEY, id);
+  try {
+    localStorage.removeItem(ACTIVE_KEY);
+    return { ok: true };
+  } catch {
+    return { ok: false, reason: "Could not clear active project." };
+  }
 }
 
 export function getProject(id: string): ProjectState | undefined {
   return listProjects().find((p) => p.id === id);
 }
 
-export function upsertProject(project: ProjectState) {
+export function upsertProject(project: ProjectState): StorageWriteResult {
   const all = listProjects();
   const idx = all.findIndex((p) => p.id === project.id);
   if (idx >= 0) all[idx] = project;
   else all.unshift(project);
-  saveAll(all);
+  return saveAll(all);
 }
 
-export function deleteProject(id: string) {
-  saveAll(listProjects().filter((p) => p.id !== id));
+export function deleteProject(id: string): StorageWriteResult {
+  const result = saveAll(listProjects().filter((p) => p.id !== id));
   if (getActiveProjectId() === id) setActiveProjectId(null);
+  return result;
 }
 
 export function createProject(input: {

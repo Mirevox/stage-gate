@@ -110,6 +110,8 @@ export function askGatekeeper(
   let summary: string;
   let nextAction: string;
 
+  const blocked = requiredUnmet.filter((u) => u.status === "blocked");
+
   if (canAdvance) {
     const next = nextSubstage(template, stageId, substageId);
     if (next) {
@@ -119,6 +121,13 @@ export function askGatekeeper(
       summary = `Yes — “${substage.name}” is complete. This workflow has no further steps.`;
       nextAction = "Mark the project complete or start a new one.";
     }
+  } else if (blocked.length > 0) {
+    summary =
+      blocked.length === 1
+        ? `Not yet. “${blocked[0].label}” is marked blocked.`
+        : `Not yet. ${blocked.length} required checks are marked blocked.`;
+    nextAction =
+      "Resolve or waive each blocked check with a written reason before advancing.";
   } else if (requiredUnmet.length === 1) {
     const only = requiredUnmet[0];
     summary = `Not yet. One required check is still open: “${only.label}”.`;

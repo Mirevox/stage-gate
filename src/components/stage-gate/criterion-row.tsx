@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { CriterionState, GateCriterion } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import { useState } from "react";
 
 const KIND_LABEL: Record<GateCriterion["kind"], string> = {
   checklist: "Checklist",
@@ -22,6 +23,17 @@ export function CriterionRow({
   onChange: (next: CriterionState) => void;
 }) {
   const status = state.status ?? "pending";
+  const [waiverHint, setWaiverHint] = useState<string | null>(null);
+
+  const tryWaive = () => {
+    const note = (state.note ?? "").trim();
+    if (!note) {
+      setWaiverHint("Add a short reason in the note field before waiving.");
+      return;
+    }
+    setWaiverHint(null);
+    onChange({ ...state, status: "waived", note });
+  };
 
   return (
     <div
@@ -42,6 +54,9 @@ export function CriterionRow({
               <Badge>Optional</Badge>
             )}
             <Badge>{KIND_LABEL[criterion.kind]}</Badge>
+            {status === "blocked" && <Badge tone="warn">Blocked</Badge>}
+            {status === "waived" && <Badge tone="warn">Waived</Badge>}
+            {status === "met" && <Badge tone="ok">Done</Badge>}
           </div>
           <p className="text-sm text-[var(--muted)]">{criterion.help}</p>
           <p className="text-xs text-[var(--muted)]/90">
@@ -52,34 +67,48 @@ export function CriterionRow({
           <Button
             size="sm"
             variant={status === "met" ? "default" : "secondary"}
-            onClick={() => onChange({ ...state, status: "met" })}
+            onClick={() => {
+              setWaiverHint(null);
+              onChange({ ...state, status: "met" });
+            }}
           >
             Mark done
           </Button>
           <Button
             size="sm"
             variant={status === "waived" ? "default" : "secondary"}
-            onClick={() =>
-              onChange({
-                ...state,
-                status: "waived",
-                note: state.note || "Waived",
-              })
-            }
+            onClick={tryWaive}
           >
             Waive
           </Button>
           <Button
             size="sm"
+            variant={status === "blocked" ? "danger" : "secondary"}
+            onClick={() => {
+              setWaiverHint(null);
+              onChange({ ...state, status: "blocked" });
+            }}
+          >
+            Mark blocked
+          </Button>
+          <Button
+            size="sm"
             variant="ghost"
-            onClick={() =>
-              onChange({ status: "pending", note: undefined, evidence: undefined })
-            }
+            onClick={() => {
+              setWaiverHint(null);
+              onChange({ status: "pending", note: undefined, evidence: undefined });
+            }}
           >
             Reset
           </Button>
         </div>
       </div>
+
+      {waiverHint && (
+        <p className="mt-2 text-xs text-amber-200" role="status">
+          {waiverHint}
+        </p>
+      )}
 
       <div className="mt-3 grid gap-2 sm:grid-cols-2">
         <label className="block text-xs text-[var(--muted)]">
@@ -97,7 +126,10 @@ export function CriterionRow({
             className="mt-1 w-full rounded-md border border-[var(--line)] bg-black/30 px-3 py-2 text-sm text-[var(--text)] placeholder:text-white/25 focus:border-[var(--neon)]/50 focus:outline-none"
             placeholder="Why this is done or waived"
             value={state.note ?? ""}
-            onChange={(e) => onChange({ ...state, note: e.target.value })}
+            onChange={(e) => {
+              setWaiverHint(null);
+              onChange({ ...state, note: e.target.value });
+            }}
           />
         </label>
       </div>

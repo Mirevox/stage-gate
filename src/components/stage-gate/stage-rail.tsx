@@ -13,10 +13,14 @@ import { Lock } from "lucide-react";
 export function StageRail({
   template,
   project,
+  viewStageId,
+  viewSubstageId,
   onSelect,
 }: {
   template: WorkflowTemplate;
   project: ProjectState;
+  viewStageId: string;
+  viewSubstageId: string;
   onSelect: (stageId: string, substageId: string) => void;
 }) {
   return (
@@ -24,7 +28,8 @@ export function StageRail({
       {template.stages.map((stage, index) => {
         const unlocked = isStageUnlocked(template, project, stage.id);
         const progress = stageProgress(stage, project);
-        const isCurrent = project.currentStageId === stage.id;
+        const isFrontier = project.currentStageId === stage.id;
+        const isViewed = viewStageId === stage.id;
 
         return (
           <div key={stage.id} className="relative">
@@ -34,7 +39,7 @@ export function StageRail({
             <div
               className={cn(
                 "relative rounded-xl border p-3 transition-colors",
-                isCurrent
+                isViewed
                   ? "border-[var(--neon)]/40 bg-[var(--neon)]/5"
                   : "border-[var(--line)] bg-[var(--panel)]/40",
                 !unlocked && "opacity-55",
@@ -45,7 +50,7 @@ export function StageRail({
                   <span
                     className={cn(
                       "flex h-8 w-8 items-center justify-center rounded-full border text-xs font-semibold",
-                      isCurrent
+                      isViewed
                         ? "border-[var(--neon)] text-[var(--neon)]"
                         : "border-[var(--line)] text-[var(--muted)]",
                     )}
@@ -57,7 +62,7 @@ export function StageRail({
                     <p className="text-xs text-[var(--muted)]">{stage.summary}</p>
                   </div>
                 </div>
-                <Badge tone={progress.ready ? "ok" : isCurrent ? "neon" : "neutral"}>
+                <Badge tone={progress.ready ? "ok" : isFrontier ? "neon" : "neutral"}>
                   {progress.done}/{progress.total}
                 </Badge>
               </div>
@@ -70,7 +75,9 @@ export function StageRail({
                     stage.id,
                     sub.id,
                   );
-                  const active =
+                  const viewed =
+                    viewStageId === stage.id && viewSubstageId === sub.id;
+                  const frontier =
                     project.currentStageId === stage.id &&
                     project.currentSubstageId === sub.id;
                   return (
@@ -78,16 +85,23 @@ export function StageRail({
                       <button
                         type="button"
                         disabled={!subUnlocked}
+                        aria-current={viewed ? "step" : undefined}
                         onClick={() => onSelect(stage.id, sub.id)}
                         className={cn(
                           "w-full rounded-md px-2.5 py-1.5 text-left text-sm transition-colors",
-                          active
+                          viewed
                             ? "bg-[var(--neon)]/15 text-[var(--neon)]"
                             : "text-[var(--muted)] hover:bg-white/5 hover:text-[var(--text)]",
+                          frontier && !viewed && "ring-1 ring-inset ring-[var(--neon)]/25",
                           !subUnlocked && "cursor-not-allowed opacity-50",
                         )}
                       >
                         {sub.name}
+                        {frontier && !viewed ? (
+                          <span className="ml-2 text-[10px] uppercase tracking-wide text-[var(--neon)]/70">
+                            frontier
+                          </span>
+                        ) : null}
                       </button>
                     </li>
                   );

@@ -32,6 +32,7 @@ export function AppShell() {
   const [project, setProject] = useState<ProjectState | null>(null);
   const [viewStageId, setViewStageId] = useState<string | null>(null);
   const [viewSubstageId, setViewSubstageId] = useState<string | null>(null);
+  const [storageError, setStorageError] = useState<string | null>(null);
 
   const refresh = (activeId?: string | null) => {
     const all = listProjects();
@@ -144,7 +145,16 @@ export function AppShell() {
               variant="danger"
               size="sm"
               onClick={() => {
-                deleteProject(project.id);
+                const ok = window.confirm(
+                  `Delete project “${project.name}”? This cannot be undone.`,
+                );
+                if (!ok) return;
+                const result = deleteProject(project.id);
+                if (!result.ok) {
+                  setStorageError(result.reason);
+                  return;
+                }
+                setStorageError(null);
                 refresh(null);
               }}
             >
@@ -154,10 +164,21 @@ export function AppShell() {
         </div>
       </header>
 
+      {storageError && (
+        <div
+          className="border-b border-amber-400/30 bg-amber-500/10 px-4 py-2 text-sm text-amber-100"
+          role="alert"
+        >
+          {storageError}
+        </div>
+      )}
+
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-6 lg:grid-cols-[260px_minmax(0,1fr)_300px] sm:px-6">
         <StageRail
           template={template}
           project={project}
+          viewStageId={stageId}
+          viewSubstageId={substageId}
           onSelect={(s, sub) => {
             setViewStageId(s);
             setViewSubstageId(sub);
