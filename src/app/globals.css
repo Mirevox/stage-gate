@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --ink: #07060f;
+  --bg: #0b0914;
+  --panel: #141022;
+  --line: rgba(168, 140, 255, 0.18);
+  --text: #f4f1ff;
+  --muted: #a79fc2;
+  --neon: #4df0ff;
+  --neon-dim: #2bd4e6;
+  --purple: #7c5cff;
+  --background: var(--bg);
+  --foreground: var(--text);
+}
+
+body {
+  color: var(--text);
+  background:
+    radial-gradient(1200px 600px at 10% -10%, rgba(124, 92, 255, 0.28), transparent 55%),
+    radial-gradient(900px 500px at 90% 0%, rgba(77, 240, 255, 0.12), transparent 50%),
+    radial-gradient(700px 400px at 50% 100%, rgba(124, 92, 255, 0.1), transparent 55%),
+    var(--bg);
+  min-height: 100vh;
+}
+
+.font-display {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  letter-spacing: -0.02em;
+}
+
+.gatekeeper-panel {
+  animation: gate-in 0.45s ease-out;
+}
+
+@keyframes gate-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gatekeeper-panel {
+    animation: none;
+  }
+}
