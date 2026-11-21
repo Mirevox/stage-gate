@@ -40,8 +40,11 @@ function evaluateSubstage(
       evidence: state.evidence,
     };
     if (state.status === "met") met.push(row);
-    else if (state.status === "waived") waived.push(row);
-    else unmet.push({ ...row, status: state.status === "blocked" ? "blocked" : "pending" });
+    else if (state.status === "waived" && Boolean(state.note?.trim())) waived.push(row);
+    else if (state.status === "waived") {
+      // Reasonless waiver does not pass (FR-07) — treat as unmet pending.
+      unmet.push({ ...row, status: "pending" });
+    } else unmet.push({ ...row, status: state.status === "blocked" ? "blocked" : "pending" });
   }
 
   const blocking = unmet.filter((u) => u.required);
@@ -119,7 +122,7 @@ export function askGatekeeper(
       nextAction = `Advance to “${next.substageName}” in “${next.stageName}”.`;
     } else {
       summary = `Yes — “${substage.name}” is complete. This workflow has no further steps.`;
-      nextAction = "Mark the project complete or start a new one.";
+      nextAction = "All steps are satisfied — switch projects or start a new one.";
     }
   } else if (blocked.length > 0) {
     summary =

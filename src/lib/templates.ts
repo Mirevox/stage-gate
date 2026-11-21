@@ -174,7 +174,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
               {
                 id: "build-done",
                 label: "Core change implemented",
-                help: "The planned slice exists in the working tree.",
+                help: "The planned slice exists in your project files.",
                 kind: "checklist",
                 required: true,
                 howToSatisfy: "Mark when the main implementation for this slice is in place.",
@@ -221,7 +221,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
     name: "Bug fix",
     tagline: "Reproduce → isolate → fix → prove it stays fixed.",
     audience: "Anyone chasing a concrete defect without a full spec cycle.",
-    harnessNote: "Pair with any agent that can read logs, tests, and diffs.",
+    harnessNote: "Pair with any agent that can read logs, tests, and code changes.",
     stages: [
       {
         id: "triage",
@@ -289,10 +289,10 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
               {
                 id: "fix-applied",
                 label: "Fix applied",
-                help: "The change is in the working tree.",
+                help: "The change is saved in your project files.",
                 kind: "checklist",
                 required: true,
-                howToSatisfy: "Mark when the fix is committed or ready to commit.",
+                howToSatisfy: "Mark when the fix is saved and ready to ship.",
               },
               {
                 id: "fix-retest",
@@ -319,7 +319,7 @@ export const WORKFLOW_TEMPLATES: WorkflowTemplate[] = [
               },
               {
                 id: "fix-approve",
-                label: "Ready to merge / ship",
+                label: "Ready to ship",
                 help: "Human confirmation for the fix.",
                 kind: "approval",
                 required: true,

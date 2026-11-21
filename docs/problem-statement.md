@@ -1,0 +1,5 @@
+# Problem statement
+
+AI coding harnesses execute work well once instructions are clear, but they leave people—especially non-technical product owners—without a reliable answer to **“can I advance, and what is still missing?”** Project state hides in chat transcripts and scattered notes; agents either rush past unfinished thinking or stall because nobody knows when pre-requirements, requirements, or a build track are ready. Spec-driven overlays help some teams, yet they lock every task into one methodology, and issue trackers sit too far from the agent loop to explain readiness in plain language.
+
+**Mirevox Stage-gate** is a local, open-source visual step-and-check layer that sits *beside* any harness. Users pick a template (spec-driven is one of four—not the only path), walk stages and substages, and get a deterministic Gatekeeper verdict over checks they mark done or waive with a reason. v1 does **not** observe the harness, repo, or CI; it makes the blanks and blockers legible so humans can steer agent work without learning Git verbs.

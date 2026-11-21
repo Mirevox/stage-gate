@@ -1,9 +1,9 @@
 # Devil’s advocate — Mirevox stage workflow
 
+> **Council record (pre-build).** Locked v1 lives in `docs/requirements.md`. Persistence is browser `localStorage` (not server `data/` files). Starter “Create Next App” copy has been replaced; Gatekeeper remains deterministic and non-observing.
+
 **Status:** Council constraint for v1. Where this note conflicts with `docs/market-gap.md`, `docs/problem-opportunity.md`, or `docs/requirements.draft.md`, those documents change.
 **Slice:** A runnable web UI one person can use. Local persistence is enough. No homelab. No n8n. No model call on the gate.
-
-The app in this repo is still the Next.js starter (`src/app/page.tsx`, metadata title “Create Next App”). Nothing here observes an agent, a repo, or a document. Requirements that assume a control plane are describing a product we have not started.
 
 ## Verdict
 

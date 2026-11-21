@@ -24,20 +24,25 @@ export function NewProjectForm({
           Stage-gate
         </h1>
         <p className="max-w-2xl text-base leading-relaxed text-[var(--muted)]">
-          A visual workflow on top of any AI harness. Pick a template, walk the
-          stages, and ask Gatekeeper when you can advance — without learning Git
-          verbs or living in an agent transcript.
+          Visual steps and checks beside any AI harness. Pick a template, walk
+          the stages, and ask Gatekeeper what is still missing — without learning
+          Git verbs or living in an agent transcript. Checks are yours to mark;
+          this app does not connect to the harness yet.
         </p>
       </header>
 
       <section className="space-y-3">
         <h2 className="text-sm font-semibold text-[var(--text)]">1. Name this work</h2>
-        <input
-          className="w-full rounded-lg border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-[var(--text)] placeholder:text-white/30 focus:border-[var(--neon)]/50 focus:outline-none"
-          placeholder="e.g. Appointment booking v1"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-        />
+        <label className="block">
+          <span className="sr-only">Project name</span>
+          <input
+            className="w-full rounded-lg border border-[var(--line)] bg-[var(--panel)] px-4 py-3 text-[var(--text)] placeholder:text-[var(--muted)]/75 focus:border-[var(--neon)]/50 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--neon)]"
+            placeholder="e.g. Appointment booking v1"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            aria-label="Project name"
+          />
+        </label>
       </section>
 
       <section className="space-y-3">
@@ -65,7 +70,7 @@ export function NewProjectForm({
                 {templateId === t.id && <Badge tone="neon">Selected</Badge>}
               </div>
               <p className="text-sm text-[var(--muted)]">{t.tagline}</p>
-              <p className="mt-2 text-xs text-white/35">{t.audience}</p>
+              <p className="mt-2 text-xs text-[var(--muted)]">{t.audience}</p>
             </button>
           ))}
         </div>
@@ -75,6 +80,9 @@ export function NewProjectForm({
         <h2 className="text-sm font-semibold text-[var(--text)]">
           3. Which harness are you using?
         </h2>
+        <p className="text-sm text-[var(--muted)]">
+          Label only — Stage-gate does not connect to the harness in v1.
+        </p>
         <div className="flex flex-wrap gap-2">
           {HARNESS_PRESETS.map((h) => (
             <button

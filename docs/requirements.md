@@ -5,11 +5,11 @@
 **Version:** v1.0 (Locked)  
 **Status:** Locked for v1 build, verification, and release  
 **Inputs Vetted:**
-- `/agent/repos/tmp-51ef90955a03092e/docs/problem-opportunity.md`
-- `/agent/repos/tmp-51ef90955a03092e/docs/requirements.draft.md`
-- `/agent/repos/tmp-51ef90955a03092e/docs/market-gap.md`
-- `/agent/repos/tmp-51ef90955a03092e/docs/devils-advocate.md`
-- Current v1 implementation in `/agent/repos/tmp-51ef90955a03092e/src/`
+- `docs/problem-opportunity.md`
+- `docs/requirements.draft.md` (superseded)
+- `docs/market-gap.md`
+- `docs/devils-advocate.md`
+- Current v1 implementation in `src/`
 
 ---
 
@@ -282,15 +282,17 @@ v1 is ready to declare **done** only when **every** gate below passes with recor
 
 ---
 
-## 8. Known v1 Hardening Items (Current Codebase vs. Locked Spec)
+## 8. Hardening status (codebase vs locked spec)
 
-During requirements vetting of `/agent/repos/tmp-51ef90955a03092e/src/` and repo root, eight concrete, small-surface hardening gaps were identified between the initial v1 scaffold and the locked criteria above:
-
-1. **Waiver rationale enforcement (`src/components/stage-gate/criterion-row.tsx`):** Clicking *Waive* currently auto-fills `"Waived"` when `note` is empty, contradicting the *"Note (required when waiving)"* label and **FR-07.3**. Refuse blank/whitespace-only waivers and prompt/focus the note input before setting `status: "waived"`.
-2. **`blocked` status control & verdict phrasing (`src/components/stage-gate/criterion-row.tsx`, `src/lib/gatekeeper.ts`):** `blocked` is modeled in `types.ts` and styled in `CriterionRow`, but lacks a UI action button and explicit mention in `askGatekeeper`'s summary (**FR-05.2**, **FR-06.1**).
-3. **Viewed vs. current substage highlight (`src/components/stage-gate/stage-rail.tsx`, `src/components/stage-gate/app-shell.tsx`):** `StageRail` highlights `project.currentStageId`/`project.currentSubstageId` instead of the currently viewed `viewStageId`/`viewSubstageId`, causing visual confusion when backtracking (**FR-04.4**).
-4. **Destructive delete confirmation (`src/components/stage-gate/app-shell.tsx`):** Clicking **Delete** immediately removes the project from `localStorage` without confirmation (**FR-01.4**, **NFR-07**). Add a two-step inline confirm or dialog.
-5. **Storage quota error guard (`src/lib/storage.ts`):** `saveAll()` calls `localStorage.setItem` without a `try/catch` for `QuotaExceededError` (**NFR-07**). Wrap writes defensively.
-6. **Unit test coverage (`src/lib/gatekeeper.test.ts`):** Current test covers only `bug-fix` empty → met → next. Expand to cover all **EX-03** cases (4 templates, optional criteria, waived vs. met, blocked status, backtracking unlock, invalid stage fallback).
-7. **Starter README & missing license (`README.md`, `LICENSE`):** Root `README.md` is still the stock `create-next-app` template referencing port `3000` and Vercel deployment, and no `LICENSE` file exists (**EX-07**).
-8. **Trademark review before public release:** `Stage-Gate®` is a registered mark (Stage-Gate Inc. / R.G. Cooper); confirm naming/copy posture (prefer descriptive Mirevox phrasing) before publishing the public OSS repository.
+| Item | Status | Notes |
+| --- | --- | --- |
+| Waiver rationale enforcement (FR-07.3) | **Done** | `criterion-row.tsx` refuses blank/whitespace-only waivers. |
+| `blocked` UI + Gatekeeper phrasing (FR-05/06) | **Done** | Mark blocked control + distinct summary branch. |
+| Viewed vs frontier rail highlight (FR-04.4) | **Done** | `viewStageId` / `viewSubstageId` + frontier ring. |
+| Delete confirmation (FR-01.4, NFR-07) | **Done** | `window.confirm` before delete. |
+| Storage quota guard (NFR-07) | **Done** | `writeKey` catches quota errors; UI surfaces `storageError`. |
+| Gatekeeper unit coverage (EX-03) | **Done** | Templates, optional criteria, waive/met, blocked, unlock/backtrack, invalid ids. |
+| Honest README + OSI license (EX-07) | **Done** | README matches v1; **Apache-2.0** `LICENSE`. |
+| Docker Compose standup (NFR-08 / production bar) | **Done** | `Dockerfile`, `docker-compose.yml`, `GET /api/health`, `.env.example`. |
+| Trademark posture | **Open (docs)** | Prefer descriptive “steps and checks”; no affiliation with Stage-Gate® Inc. |
+| Live harness / export / server persist | **Deferred** | Documented non-goals / v1.1–v2 in §6. |

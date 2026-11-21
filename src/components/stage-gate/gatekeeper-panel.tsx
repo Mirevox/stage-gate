@@ -7,11 +7,17 @@ import { CheckCircle2, CircleAlert, ShieldQuestion } from "lucide-react";
 
 export function GatekeeperPanel({
   verdict,
+  hasNextStep,
+  atFrontier,
   onAdvance,
 }: {
   verdict: AdvanceVerdict;
+  hasNextStep: boolean;
+  atFrontier: boolean;
   onAdvance: () => void;
 }) {
+  const canClickAdvance = verdict.canAdvance && hasNextStep && atFrontier;
+
   return (
     <aside className="gatekeeper-panel relative overflow-hidden rounded-xl border border-[var(--line)] bg-[var(--panel)] p-5">
       <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-[var(--neon)]/10 blur-2xl" />
@@ -25,10 +31,14 @@ export function GatekeeperPanel({
         <p className="text-lg font-medium leading-snug text-[var(--text)]">
           When can I advance?
         </p>
+        <p className="text-xs leading-relaxed text-white/40">
+          Checks are what you mark done or waive here — Stage-gate does not watch
+          your harness, repo, or CI.
+        </p>
         <p className="text-sm leading-relaxed text-[var(--muted)]">{verdict.summary}</p>
 
         <div className="rounded-lg border border-[var(--line)] bg-black/25 p-3">
-          <p className="text-xs uppercase tracking-wider text-white/40">Next action</p>
+          <p className="text-xs uppercase tracking-wider text-[var(--muted)]">Next action</p>
           <p className="mt-1 text-sm text-[var(--text)]">{verdict.nextAction}</p>
         </div>
 
@@ -36,11 +46,28 @@ export function GatekeeperPanel({
           {verdict.unmet.map((u) => (
             <div
               key={u.criterionId}
-              className="flex items-start gap-2 text-sm text-amber-100/90"
+              className={
+                u.status === "blocked"
+                  ? "flex items-start gap-2 text-sm text-rose-100/90"
+                  : "flex items-start gap-2 text-sm text-amber-100/90"
+              }
             >
-              <CircleAlert className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" />
+              <CircleAlert
+                className={
+                  u.status === "blocked"
+                    ? "mt-0.5 h-4 w-4 shrink-0 text-rose-300"
+                    : "mt-0.5 h-4 w-4 shrink-0 text-amber-300"
+                }
+              />
               <span>
                 <span className="font-medium">{u.label}</span>
+                {u.status === "blocked" ? (
+                  <Badge tone="danger" className="ml-2">
+                    Blocked
+                  </Badge>
+                ) : !u.required ? (
+                  <Badge className="ml-2">Optional</Badge>
+                ) : null}
                 <span className="block text-xs text-[var(--muted)]">{u.howToSatisfy}</span>
               </span>
             </div>
@@ -55,19 +82,30 @@ export function GatekeeperPanel({
             </div>
           ))}
           {verdict.waived.map((w) => (
-            <div key={w.criterionId} className="flex items-center gap-2 text-sm">
+            <div key={w.criterionId} className="flex items-start gap-2 text-sm">
               <Badge tone="warn">Waived</Badge>
-              <span className="text-[var(--muted)]">{w.label}</span>
+              <span className="text-[var(--muted)]">
+                <span className="block">{w.label}</span>
+                {w.note ? (
+                  <span className="block text-xs text-[var(--muted)]">Reason: {w.note}</span>
+                ) : null}
+              </span>
             </div>
           ))}
         </div>
 
         <Button
           className="w-full"
-          disabled={!verdict.canAdvance}
+          disabled={!canClickAdvance}
           onClick={onAdvance}
         >
-          {verdict.canAdvance ? "Advance to next step" : "Complete checks to advance"}
+          {!verdict.canAdvance
+            ? "Complete checks to advance"
+            : !atFrontier
+              ? "Viewing an earlier step"
+              : hasNextStep
+                ? "Advance to next step"
+                : "Workflow complete"}
         </Button>
       </div>
     </aside>

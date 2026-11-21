@@ -6,7 +6,7 @@
     "dev": "next dev -p 3847 -H 127.0.0.1",
     "build": "next build",
     "start": "next start -p 3847 -H 127.0.0.1",
-    "lint": "next lint",
+    "lint": "tsc --noEmit",
     "test": "tsx src/lib/gatekeeper.test.ts"
   },
   "dependencies": {
@@ -36,5 +36,6 @@
     "tsx": "^4.23.15",
     "typescript": "^5"
   },
-  "description": "Visual stage-gate workflow for any AI harness — selectable templates and Gatekeeper advance checks"
+  "description": "Visual stage-gate workflow for any AI harness — selectable templates and Gatekeeper advance checks",
+  "license": "Apache-2.0"
 }

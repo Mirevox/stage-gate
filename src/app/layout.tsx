@@ -17,7 +17,7 @@ const sans = Source_Sans_3({
 export const metadata: Metadata = {
   title: "Mirevox Stage-gate",
   description:
-    "Visual stage-gate workflows over any AI harness — selectable templates and Gatekeeper advance checks.",
+    "Visual step-and-check workflows beside any AI harness — selectable templates and Gatekeeper advance checks (user-stated or waived).",
 };
 
 export default function RootLayout({
