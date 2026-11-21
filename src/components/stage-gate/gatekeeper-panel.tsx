@@ -94,6 +94,21 @@ export function GatekeeperPanel({
           ))}
         </div>
 
+        {verdict.auditFindings && verdict.auditFindings.length > 0 ? (
+          <div className="rounded-lg border border-amber-400/30 bg-amber-950/20 p-3 text-xs text-amber-100/90">
+            <p className="font-semibold uppercase tracking-wider text-amber-300">
+              Evidence audit ({verdict.auditFindings.length})
+            </p>
+            <ul className="mt-1.5 space-y-1">
+              {verdict.auditFindings.map((f) => (
+                <li key={`${f.criterionId}:${f.message}`}>
+                  <span className="font-medium">{f.label}:</span> {f.message}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
+
         <Button
           className="w-full"
           disabled={!canClickAdvance}

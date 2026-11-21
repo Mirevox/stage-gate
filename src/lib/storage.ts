@@ -1,5 +1,5 @@
 import { firstStageSubstage, getTemplate } from "./templates";
-import type { CriterionState, ProjectState } from "./types";
+import type { CriterionState, ProjectState, WorkflowTemplate } from "./types";
 
 const PROJECTS_KEY = "mirevox.stage-gate.projects";
 const ACTIVE_KEY = "mirevox.stage-gate.active";
@@ -146,3 +146,45 @@ export const HARNESS_PRESETS = [
   "Local CLI agent",
   "Other / mixed",
 ] as const;
+
+export function exportHandoffMarkdown(
+  template: WorkflowTemplate,
+  project: ProjectState,
+): string {
+  const lines: string[] = [
+    `# Stage-Gate Handoff: ${project.name}`,
+    "",
+    `- **Template:** ${template.name} (\`${template.id}\`)`,
+    `- **Harness:** ${project.harness}`,
+    `- **Current position:** \`${project.currentStageId}\` / \`${project.currentSubstageId}\``,
+    `- **Updated at:** ${project.updatedAt}`,
+    "",
+  ];
+
+  for (const stage of template.stages) {
+    lines.push(`## ${stage.name} (\`${stage.id}\`)`);
+    for (const sub of stage.substages) {
+      lines.push(`### ${sub.name} (\`${sub.id}\`)`);
+      for (const c of sub.criteria) {
+        const st = project.criteria[c.id] ?? { status: "pending" };
+        const mark =
+          st.status === "met"
+            ? "[x]"
+            : st.status === "waived"
+              ? "[~]"
+              : "[ ]";
+        const extras = [
+          st.evidence ? `evidence: ${st.evidence}` : "",
+          st.note ? `note: ${st.note}` : "",
+        ]
+          .filter(Boolean)
+          .join(" | ");
+        lines.push(
+          `- ${mark} **${c.label}** (${st.status})${extras ? ` — ${extras}` : ""}`,
+        );
+      }
+      lines.push("");
+    }
+  }
+  return lines.join("\n");
+}

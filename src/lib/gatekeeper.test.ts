@@ -1,10 +1,12 @@
 import {
   askGatekeeper,
+  auditSubstageContent,
   isStageUnlocked,
   isSubstageUnlocked,
   nextSubstage,
   previousSubstage,
 } from "./gatekeeper";
+import { exportHandoffMarkdown } from "./storage";
 import { WORKFLOW_TEMPLATES, getTemplate, listAllCriteria } from "./templates";
 import type { ProjectState, WorkflowTemplate } from "./types";
 
@@ -254,6 +256,30 @@ for (const template of WORKFLOW_TEMPLATES) {
     nextSubstage(template, lastStage.id, lastSub.id) === null,
     `${template.id} should have no next after last substage`,
   );
+}
+
+// Content audit + strictAudit + Markdown export
+{
+  const template = getTemplate("spec-driven")!;
+  const project = baseProject("spec-driven");
+  meetAll(project, "spec-driven");
+  const sub = template.stages[0].substages[0];
+  const targetCriterion = sub.criteria[0];
+  project.criteria[targetCriterion.id] = { status: "met", note: "TBD" };
+
+  const findings = auditSubstageContent(sub, project);
+  assert(findings.length >= 1, "should flag placeholder note");
+
+  const loose = askGatekeeper(template, project);
+  assert(loose.canAdvance, "non-strict mode warns without blocking");
+  assert((loose.auditFindings?.length ?? 0) >= 1, "verdict includes auditFindings");
+
+  const strict = askGatekeeper(template, project, { strictAudit: true });
+  assert(!strict.canAdvance, "strictAudit blocks advance on placeholder evidence");
+
+  const md = exportHandoffMarkdown(template, project);
+  assert(md.includes("# Stage-Gate Handoff: Test"), "handoff markdown has header");
+  assert(md.includes(targetCriterion.label), "handoff markdown lists criterion");
 }
 
 console.log("gatekeeper.test.ts: ok");

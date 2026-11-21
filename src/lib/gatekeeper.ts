@@ -1,5 +1,6 @@
 import type {
   AdvanceVerdict,
+  AuditFinding,
   CriterionState,
   GateCheckResult,
   ProjectState,
@@ -81,11 +82,60 @@ export function stageProgress(
   return { total: all.length, done, ready };
 }
 
+/** Audit criterion notes and evidence for shallow or placeholder sign-offs. */
+export function auditSubstageContent(
+  substage: Substage,
+  project: ProjectState,
+): AuditFinding[] {
+  const findings: AuditFinding[] = [];
+  const placeholderRe = /\b(todo|tbd|fixme|placeholder|n\/a)\b/i;
+
+  for (const c of substage.criteria) {
+    const state = criterionState(project, c.id);
+    if (state.status !== "met" && state.status !== "waived") continue;
+
+    const noteTrim = state.note?.trim() ?? "";
+    const evidenceTrim = state.evidence?.trim() ?? "";
+
+    if (
+      state.status === "met" &&
+      (c.kind === "artifact" ||
+        c.kind === "approval" ||
+        c.kind === "harness_signal") &&
+      !noteTrim &&
+      !evidenceTrim
+    ) {
+      findings.push({
+        criterionId: c.id,
+        label: c.label,
+        severity: "warn",
+        message: `Marked met without evidence or note for ${c.kind} check.`,
+      });
+    }
+
+    if (
+      (noteTrim && (placeholderRe.test(noteTrim) || noteTrim.length < 4)) ||
+      (evidenceTrim &&
+        (placeholderRe.test(evidenceTrim) || evidenceTrim.length < 4))
+    ) {
+      findings.push({
+        criterionId: c.id,
+        label: c.label,
+        severity: "warn",
+        message:
+          "Evidence or note contains a placeholder or is too short to audit.",
+      });
+    }
+  }
+
+  return findings;
+}
+
 /** Plain-language Gatekeeper: when can I advance from the current substage? */
 export function askGatekeeper(
   template: WorkflowTemplate,
   project: ProjectState,
-  opts?: { stageId?: string; substageId?: string },
+  opts?: { stageId?: string; substageId?: string; strictAudit?: boolean },
 ): AdvanceVerdict {
   const stageId = opts?.stageId ?? project.currentStageId;
   const substageId = opts?.substageId ?? project.currentSubstageId;
@@ -104,10 +154,15 @@ export function askGatekeeper(
       unmet: [],
       waived: [],
       nextAction: "Pick a valid stage from the board.",
+      auditFindings: [],
     };
   }
 
-  const { met, unmet, waived, canAdvance } = evaluateSubstage(substage, project);
+  const evalResult = evaluateSubstage(substage, project);
+  const { met, unmet, waived } = evalResult;
+  const auditFindings = auditSubstageContent(substage, project);
+  const strictBlocked = Boolean(opts?.strictAudit && auditFindings.length > 0);
+  const canAdvance = evalResult.canAdvance && !strictBlocked;
   const requiredUnmet = unmet.filter((u) => u.required);
 
   let summary: string;
@@ -124,6 +179,9 @@ export function askGatekeeper(
       summary = `Yes — “${substage.name}” is complete. This workflow has no further steps.`;
       nextAction = "All steps are satisfied — switch projects or start a new one.";
     }
+  } else if (strictBlocked && requiredUnmet.length === 0) {
+    summary = `Not yet. Strict audit flagged ${auditFindings.length} check(s) needing stronger evidence or notes.`;
+    nextAction = auditFindings[0].message;
   } else if (blocked.length > 0) {
     summary =
       blocked.length === 1
@@ -151,6 +209,7 @@ export function askGatekeeper(
     unmet,
     waived,
     nextAction,
+    auditFindings,
   };
 }
 

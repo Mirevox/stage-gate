@@ -78,6 +78,13 @@ export interface GateCheckResult {
   evidence?: string;
 }
 
+export interface AuditFinding {
+  criterionId: string;
+  label: string;
+  severity: "warn" | "fail";
+  message: string;
+}
+
 export interface AdvanceVerdict {
   canAdvance: boolean;
   stageId: string;
@@ -89,4 +96,5 @@ export interface AdvanceVerdict {
   unmet: GateCheckResult[];
   waived: GateCheckResult[];
   nextAction: string;
+  auditFindings?: AuditFinding[];
 }
