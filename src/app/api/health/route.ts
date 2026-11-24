@@ -8,7 +8,7 @@ export async function GET() {
     {
       status: "ok",
       service: "mirevox-stage-gate",
-      version: "0.1.0",
+      version: "0.2.0",
     },
     {
       status: 200,

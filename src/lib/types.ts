@@ -46,11 +46,19 @@ export interface WorkflowTemplate {
   stages: Stage[];
 }
 
+export type CriterionProvenance =
+  | "manual"
+  | "context-inferred"
+  | "jira-approval";
+
 export interface CriterionState {
   status: CriterionStatus;
   note?: string;
   evidence?: string;
   updatedAt?: string;
+  provenance?: CriterionProvenance;
+  sourceRef?: string;
+  approver?: string;
 }
 
 export interface ProjectState {
@@ -66,6 +74,84 @@ export interface ProjectState {
   currentStageId: string;
   /** substageId currently focused */
   currentSubstageId: string;
+  appcode?: string;
+  provenance?: CriterionProvenance;
+  sourceRef?: string;
+  approver?: string;
+  lastEvaluatedAt?: string;
+}
+
+export interface ContextDocumentInput {
+  docId?: string;
+  doc_id?: string;
+  source?: string;
+  stage?: string | null;
+  title?: string;
+  path?: string;
+  ref?: string | null;
+  content?: string;
+  summary?: string;
+  provenance?: string;
+  updatedAt?: string;
+  occurredAt?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface RejectedContextFinding {
+  docId: string;
+  source?: string;
+  path?: string;
+  title?: string;
+  criterionId?: string;
+  reason: string;
+  wordCount?: number;
+  uniqueTokenCount?: number;
+}
+
+export interface ContextEvaluationResult {
+  appcode: string;
+  evaluatedAt: string;
+  contextEngineConfigured: boolean;
+  contextEngineReachable: boolean;
+  contextEngineError?: string;
+  documentsExamined: number;
+  documentsAccepted: number;
+  inferredStageId: string;
+  inferredSubstageId: string;
+  newlySatisfiedCriteria: string[];
+  alreadySatisfiedCriteria: string[];
+  qualityScorePct: number;
+  rejectedFindings: RejectedContextFinding[];
+  verdict: AdvanceVerdict;
+}
+
+export type JiraApprovalStatus =
+  | "approved"
+  | "rejected"
+  | "blocked"
+  | "waived"
+  | "pending";
+
+export interface JiraApprovalRecord {
+  eventId: string;
+  issueKey: string;
+  stageId: string;
+  criterionId: string;
+  approvalStatus: JiraApprovalStatus;
+  approver?: string;
+  summary?: string;
+  waiverReason?: string;
+  occurredAt: string;
+  recordedAt: string;
+  applied: boolean;
+  ignoredReason?: string;
+}
+
+export interface ServerProjectState extends ProjectState {
+  appcode: string;
+  jiraApprovals: JiraApprovalRecord[];
+  processedEventIds: string[];
+  lastContextEvaluation?: ContextEvaluationResult;
 }
 
 export interface GateCheckResult {

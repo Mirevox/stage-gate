@@ -1,13 +1,13 @@
 {
   "name": "mirevox-stage-gate",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "scripts": {
     "dev": "next dev -p 3847 -H 127.0.0.1",
     "build": "next build",
     "start": "next start -p 3847 -H 127.0.0.1",
     "lint": "tsc --noEmit",
-    "test": "tsx src/lib/gatekeeper.test.ts"
+    "test": "tsx src/lib/gatekeeper.test.ts && tsx src/lib/v02.test.ts"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.4.1",
