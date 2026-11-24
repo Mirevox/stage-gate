@@ -77,6 +77,12 @@ Stage-gate is standalone. Later it pairs with shadow-versioning, context-engine,
 
 Apache License 2.0 — see [LICENSE](LICENSE).
 
+## What's New in v0.2.0
+
+- **Centralized Server Store (`src/lib/server-store.ts`):** Atomic server-side project state keyed by `appcode` (`GET/POST /api/projects`, `GET /api/projects/[appcode]`).
+- **Context-Inferred Gate Evaluator (`src/lib/context-evaluator.ts`):** Evaluates indexed documents fetched from `context-engine` (`POST /api/projects/[appcode]/evaluate-context`), enforcing a `>= 40` substantive non-placeholder words & `>= 20` unique tokens anti-slop rubric and automatically advancing unlocked stages while preserving separate human/Jira approval gates.
+- **Jira Approval Webhooks (`src/lib/jira-approval.ts`):** Processes `POST /api/projects/[appcode]/jira-webhook` (approve, reject/block downstream stages, reason-backed waive, stale-timestamp filter, optional `STAGE_GATE_JIRA_SECRET`) and emits stage transitions back to `shadow-versioning`.
+
 ## Verification
 
 Test suite, smoke test, and container verification results are recorded in [`VERIFICATION.md`](./VERIFICATION.md).
